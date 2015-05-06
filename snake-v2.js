@@ -240,7 +240,7 @@
 
 			iAnimationRequestId = window.requestAnimationFrame( fAnimationLoop );
 			
-			if( oTime.current - oTime.start > 50 ) {
+			if( oTime.current - oTime.start > 100 ) {
 				oTime.start = ( new Date() ).getTime();
 				Snake.update();
 			}
