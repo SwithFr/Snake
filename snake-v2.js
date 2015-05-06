@@ -29,7 +29,7 @@
 		 * G L O B A L S
 		 ===================================================================*/
 		var iAnimationRequestId = 0, 
-			score = 0,
+			started = false,
 			oTime = {
 				"start" : null,
 				"current": null
@@ -137,7 +137,7 @@
 							break;
 					}
 				}, Grid );
-				this.ctx.strokeStyle = "blue";
+				this.ctx.strokeStyle = "LightSlateGray";
 				this.ctx.rect( 0, 0, this.width, this.height );
 				this.ctx.stroke();
 			}
@@ -166,7 +166,7 @@
 			},
 
 			"update": function() {
-				var x, y;
+				var x, y, value = null;
 				var lastTailElement = this.tail[ this.tail.length - 1 ];
 
 				switch( this.dir ) {
@@ -190,24 +190,21 @@
 						x = lastTailElement[ 0 ];
 						y = lastTailElement[ 1 ];
 
-				}
+				} 
 
-				var value = Grid.getValue( x, y );
+				( started ) && ( value = Grid.getValue( x, y ) );
 
-				if( x != START_AT_X || y != START_AT_Y ) {
-					if ( value == FREE ) {
-						Grid.setValue( SNAKE, x, y );
-						this.tail.push( Grid.getSquare( x, y ) );
-						Snake.removeFromTail();
-					} else if ( value == FRUIT ) {
-						score++;
-						Grid.setValue( SNAKE, x, y );
-						this.tail.push( Grid.getSquare( x, y ) );
-						Grid.newFruit();
-					} else {
-						console.log( x, y );
-						fGameOver();
-					}
+				if ( value == FREE ) {
+					Grid.setValue( SNAKE, x, y );
+					this.tail.push( Grid.getSquare( x, y ) );
+					Snake.removeFromTail();
+				} else if ( value == FRUIT ) {
+					Game.score++;
+					Grid.setValue( SNAKE, x, y );
+					this.tail.push( Grid.getSquare( x, y ) );
+					Grid.newFruit();
+				} else if ( value ){
+					fGameOver();
 				}
 			}
 		};
@@ -216,7 +213,36 @@
 		 * G A M E
 		 ===================================================================*/
 
+		var Game = {
+			"score" : 0,
+			"color" : "IndianRed",
+
+			"init"	: function() {
+				oCadre.context.fillStyle = "LightSalmon";
+				oCadre.context.fillRect( 0, 0, oCadre.width, oCadre.height );
+
+				oCadre.context.fillStyle = this.color;
+				oCadre.context.font = "bold 16px 'Avenir Next'";
+				oCadre.context.textAlign = "center";
+				oCadre.context.fillText("PRESS ENTER TO START", oCadre.width / 2, oCadre.height / 2);
+			},
+
+			"update" : function() {
+				oCadre.context.fillStyle = this.color;
+				oCadre.context.font = "12px 'Avenir Next'";
+				oCadre.context.fillText('Score : ' + this.score, 30, oCadre.height - 10);
+			}
+
+		};
+
+		var fInit = function() {
+			Game.init();
+		};
+
 		var fStart = function() {
+			// Set start time
+			oTime.start = ( new Date() ).getTime();
+
 			// Init Grid
 			Grid.init( oCadre.context, oCadre.width, oCadre.height );
 
@@ -225,9 +251,6 @@
 
 			// Draw Grid
 			Grid.draw();
-
-			// Set start time
-			oTime.start = ( new Date() ).getTime();
 
 			// Loop
 			fAnimationLoop();
@@ -249,23 +272,30 @@
 
 			Grid.draw();
 
+			Game.update();
+
 		};
 
 		// Game over
 		var fGameOver = function() {
 			window.cancelAnimationFrame( iAnimationRequestId );
-			window.confirm( "You loose ! \n\nYour score : " + score );
+			window.confirm( "You loose ! \n\nYour score : " + Game.score );
 			window.location.reload( true );
 		};
 
-		fStart();
+		fInit();
+		
 
 		// On dirige le serpent
 		window.addEventListener( "keypress", function( e ) {
-			if ( e.keyCode == 38 ) { Snake.dir = UP };
-			if ( e.keyCode == 40 ) { Snake.dir = DOWN };
-			if ( e.keyCode == 39 ) { Snake.dir = RIGHT };
-			if ( e.keyCode == 37 ) { Snake.dir = LEFT };
+			( e.keyCode == 13 ) && ( fStart() );
+
+			( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) && ( !started ) && ( started = true );
+
+			( e.keyCode == 38 ) && ( Snake.dir != DOWN ) && ( Snake.dir = UP );
+			( e.keyCode == 40 ) && ( Snake.dir != UP ) && ( Snake.dir = DOWN );
+			( e.keyCode == 39 ) && ( Snake.dir != LEFT ) && ( Snake.dir = RIGHT );
+			( e.keyCode == 37 ) && ( Snake.dir != RIGHT ) && ( Snake.dir = LEFT );
 		}, false );
 
 	}
