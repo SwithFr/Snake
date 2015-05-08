@@ -20,7 +20,7 @@
 
 			SNAKE_COLOR = "#000", // default colors
 			FREE_COLOR = "#fff", 
-			FRUIT_COLOR = "yellow",
+			FRUIT_COLOR = "red",
 
 			START_AT_X = 20, // Default start position
 			START_AT_Y = 20;
@@ -84,37 +84,32 @@
 			},
 
 			"setFreeSquare": function() {
-				this.squares.forEach( function( e, i, array ) {
-					if( e[ 2] == FREE ) {
-						this.freeSquares.push( e );
-					}
-				}, this );
+				this.squares.forEach( 
+					function( e ) {
+						( e[ 2 ] == FREE ) && ( this.freeSquares.push( e ) );
+					}, 
+					this
+				);
 			},
 
 			/**
 			 * Récupère une case
 			 */
 			"getSquare" : function( x, y ) {
-				var element = this.squares.find( function( e, i, array ) {
+				var element = this.squares.find( function( e ) {
 					if( e[ 0 ] == x && e[ 1 ] == y ) {
 						return e;
 					}
 				} );
 
-				if( !element ) {
-					fGameOver();
-				} else {
-					return element;
-				}
+				( !element ) && ( fGameOver() );
+
+				return element;
 			},
 
 			"newFruit": function() {
 				var randomFreeSquare = this.freeSquares[Math.floor(Math.random()*this.freeSquares.length)];
 				Grid.setValue( FRUIT, randomFreeSquare[ 0 ], randomFreeSquare[ 1 ] );
-			},
-
-			"update" : function() {
-				this.setFreeSquare();
 			},
 
 			/**
@@ -263,12 +258,12 @@
 
 			iAnimationRequestId = window.requestAnimationFrame( fAnimationLoop );
 			
-			if( oTime.current - oTime.start > 100 ) {
+			if( oTime.current - oTime.start > 70 ) {
 				oTime.start = ( new Date() ).getTime();
 				Snake.update();
 			}
 
-			Grid.update();
+			Grid.setFreeSquare();
 
 			Grid.draw();
 
