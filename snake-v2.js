@@ -83,10 +83,14 @@
 				return this.getSquare( x, y )[ 2 ];
 			},
 
+			/**
+			 * Définit les carrés libres de la grille
+			 */
 			"setFreeSquare": function() {
+				this.freeSquares = [];
 				this.squares.forEach( 
 					function( e ) {
-						( e[ 2 ] == FREE ) && ( this.freeSquares.push( e ) );
+						if( e[ 2 ] == FREE ) { ( this.freeSquares.push( e ) ); }
 					}, 
 					this
 				);
@@ -105,11 +109,6 @@
 				( !element ) && ( fGameOver() );
 
 				return element;
-			},
-
-			"newFruit": function() {
-				var randomFreeSquare = this.freeSquares[Math.floor(Math.random()*this.freeSquares.length)];
-				Grid.setValue( FRUIT, randomFreeSquare[ 0 ], randomFreeSquare[ 1 ] );
 			},
 
 			/**
@@ -185,6 +184,17 @@
 			// 	( this.lastDir == RIGHT && this.dir == DOWN ) || ( this.lastDir == UP && this.dir == LEFT ) && ( this.angle = angle_hd );
 			// 	( this.lastDir == DOWN && this.dir == LEFT ) || ( this.lastDir == RIGHT && this.dir == UP ) && ( this.angle = angle_bd );
 			// },
+			"setAngle": function( lastTailElement ) {
+				if( (this.lastDir == LEFT && this.dir == UP) || (this.lastDir == DOWN && this.dir == RIGHT) ) {
+					Grid.setValue( angle_bg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+				} else if( (this.lastDir == UP && this.dir == RIGHT) || ( this.lastDir == LEFT && this.dir == DOWN) ) {
+					Grid.setValue( angle_hg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+				} else if ( (this.lastDir == RIGHT && this.dir == DOWN) || (this.lastDir == UP && this.dir == LEFT) ) {
+					Grid.setValue( angle_hd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+				} else if ( (this.lastDir == DOWN && this.dir == LEFT) || (this.lastDir == RIGHT && this.dir == UP) ) {
+					Grid.setValue( angle_bd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+				}
+			},
 
 			"update": function() {
 				var x, y, value = null, length;
@@ -223,15 +233,7 @@
 					// 	Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
 					// }
 					if( length > 2 ) {
-						if( (this.lastDir == LEFT && this.dir == UP) || (this.lastDir == DOWN && this.dir == RIGHT) ) {
-							Grid.setValue( angle_bg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						} else if( (this.lastDir == UP && this.dir == RIGHT) || ( this.lastDir == LEFT && this.dir == DOWN) ) {
-							Grid.setValue( angle_hg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						} else if ( (this.lastDir == RIGHT && this.dir == DOWN) || (this.lastDir == UP && this.dir == LEFT) ) {
-							Grid.setValue( angle_hd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						} else if ( (this.lastDir == DOWN && this.dir == LEFT) || (this.lastDir == RIGHT && this.dir == UP) ) {
-							Grid.setValue( angle_bd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						}
+						this.setAngle( lastTailElement );
 					}
 					Grid.setValue( SNAKE, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
@@ -240,20 +242,9 @@
 				} else if ( value == FRUIT ) {
 					Grid.setValue( SNAKE, x, y );
 					if( length > 2 ) {
-						if( (this.lastDir == LEFT && this.dir == UP) || (this.lastDir == DOWN && this.dir == RIGHT) ) {
-							Grid.setValue( angle_bg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						} else if( (this.lastDir == UP && this.dir == RIGHT) || ( this.lastDir == LEFT && this.dir == DOWN) ) {
-							Grid.setValue( angle_hg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						} else if ( (this.lastDir == RIGHT && this.dir == DOWN) || (this.lastDir == UP && this.dir == LEFT) ) {
-							Grid.setValue( angle_hd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						} else if ( (this.lastDir == DOWN && this.dir == LEFT) || (this.lastDir == RIGHT && this.dir == UP) ) {
-							Grid.setValue( angle_bd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-						}
+						this.setAngle( lastTailElement );
 					}
 					Game.score++;
-					if( this.angle && length != 1 ) {
-						Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-					}
 					this.tail.push( Grid.getSquare( x, y ) );
 					Grid.setFreeSquare();
 					Fruit.init();
@@ -273,6 +264,7 @@
 				Grid.setValue( FRUIT, randomFreeSquare[ 0 ], randomFreeSquare[ 1 ] );
 				Grid.setFreeSquare();
 		 	}
+
 		 }
 
 		/*====================================================================
