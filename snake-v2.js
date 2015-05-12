@@ -26,8 +26,8 @@
 			angle_hd = "blue",
 			angle_bd = "LightSalmon",
 
-			START_AT_X = 20, // Default start position
-			START_AT_Y = 20;
+			START_AT_X = 240, // Default start position
+			START_AT_Y = 240;
 
 		/*====================================================================
 		 * G L O B A L S
@@ -70,21 +70,21 @@
 			},
 
 			/**
-			 * Définir une valeur pour une case
+			 * Set a value for a case
 			 */
 			"setValue" : function( value, x, y ) {
 				this.getSquare( x, y )[ 2 ] = value; 
 			},
 
 			/**
-			 * Récupérer la valeur d'une case
+			 * Get value from a case
 			 */
 			"getValue" : function( x, y ) {
 				return this.getSquare( x, y )[ 2 ];
 			},
 
 			/**
-			 * Définit les carrés libres de la grille
+			 * Set free square on the grid
 			 */
 			"setFreeSquare": function() {
 				this.freeSquares = [];
@@ -97,7 +97,7 @@
 			},
 
 			/**
-			 * Récupère une case
+			 * Get a square
 			 */
 			"getSquare" : function( x, y ) {
 				var element = this.squares.find( function( e ) {
@@ -112,7 +112,7 @@
 			},
 
 			/**
-			 * Dessine la grille
+			 * Draw the grid
 			 */
 			"draw" : function() {
 				this.squares.forEach( function( e ) {
@@ -166,24 +166,24 @@
 			"angle": null,
 
 			/**
-			 * On initialise le serpent
+			 * Init Snake
 			 */
 			"init": function( x, y ) {
 				this.tail.push( Grid.getSquare( x, y ) );
 				Grid.setValue( SNAKE, x, y );
 			}, 
 
+			/**
+			 * Remove last element from tail
+			 */
 			"removeFromTail": function() {
 				Grid.setValue( FREE, this.tail[ 0 ][ 0 ], this.tail[ 0 ][ 1 ] ); 
 				this.tail.shift();
 			},
 
-			// "setAngle" : function() {
-			// 	( this.lastDir == LEFT && this.dir == UP ) || ( this.lastDir == DOWN && this.dir == RIGHT ) && ( this.angle = angle_bg );
-			// 	( this.lastDir == UP && this.dir == RIGHT ) || ( this.lastDir == LEFT && this.dir == DOWN ) && ( this.angle = angle_hg );
-			// 	( this.lastDir == RIGHT && this.dir == DOWN ) || ( this.lastDir == UP && this.dir == LEFT ) && ( this.angle = angle_hd );
-			// 	( this.lastDir == DOWN && this.dir == LEFT ) || ( this.lastDir == RIGHT && this.dir == UP ) && ( this.angle = angle_bd );
-			// },
+			/**
+			 * Set angle value
+			 */
 			"setAngle": function( lastTailElement ) {
 				if( (this.lastDir == LEFT && this.dir == UP) || (this.lastDir == DOWN && this.dir == RIGHT) ) {
 					Grid.setValue( angle_bg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
@@ -196,13 +196,14 @@
 				}
 			},
 
+			/**
+			 * Update Snake
+			 */
 			"update": function() {
 				var x, y, value = null, length;
 				var lastTailElement = this.tail[ this.tail.length - 1 ];
 				
 				length = this.tail.length;
-
-				// this.setAngle();
 
 				switch( this.dir ) {
 					case UP :
@@ -229,9 +230,6 @@
 				( started ) && ( value = Grid.getValue( x, y ) );
 
 				if ( value == FREE ) {
-					// if( this.angle && length != 1 ) {
-					// 	Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
-					// }
 					if( length > 2 ) {
 						this.setAngle( lastTailElement );
 					}
@@ -293,10 +291,6 @@
 
 		};
 
-		var fInit = function() {
-			Game.init();
-		};
-
 		var fStart = function() {
 			oCadre.context.clearRect( 0, 0, oCadre.width, oCadre.height );
 
@@ -349,10 +343,10 @@
 			window.location.reload( true );
 		};
 
-		fInit();
+		Game.init();
 		
 
-		// On dirige le serpent
+		// Move the snake
 		window.addEventListener( "keypress", function( e ) {
 			( !started ) && ( ( e.keyCode == 13 ) && ( fStart() ) );
 
