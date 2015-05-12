@@ -244,6 +244,7 @@
 					}
 					Game.score++;
 					this.tail.push( Grid.getSquare( x, y ) );
+					this.lastDir = this.dir;
 					Grid.setFreeSquare();
 					Fruit.init();
 				} else if ( value ){
