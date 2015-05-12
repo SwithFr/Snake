@@ -10,6 +10,8 @@
 		var FREE = 0, // Cases values
 			SNAKE = 1, 
 			FRUIT = 2,
+			TAIL = 3,
+			HEAD = 4,
 
 			LEFT = 37, // keyCode and directions
 			UP = 38, 
@@ -18,8 +20,8 @@
 	 
 			SQUARE_WIDTH = 20, // default square width
 
-			SNAKE_COLOR = "#000", // default colors
-			FREE_COLOR = "#fff", 
+			SNAKE_COLOR = "#d09548", // default colors
+			FREE_COLOR = "transparent", 
 			FRUIT_COLOR = "red",
 			angle_bg = "yellow",
 			angle_hg = "green",
@@ -27,7 +29,10 @@
 			angle_bd = "LightSalmon",
 
 			START_AT_X = 240, // Default start position
-			START_AT_Y = 240;
+			START_AT_Y = 240,
+
+			oSpriteSheet = null, // Image
+			oSpriteSheetSrc = './snake-sprite.png';
 
 		/*====================================================================
 		 * G L O B A L S
@@ -63,9 +68,8 @@
 				for( x = 0; x < this.width; x += SQUARE_WIDTH ) { 
 
 					for( y = 0; y < this.width; y += SQUARE_WIDTH ) {
-						this.squares.push( [ x, y, FREE ] ); // Create grid
+						this.squares.push( [ x, y, FREE, null ] ); // Create grid
 					}
-
 				} 
 			},
 
@@ -74,6 +78,13 @@
 			 */
 			"setValue" : function( value, x, y ) {
 				this.getSquare( x, y )[ 2 ] = value; 
+			},
+
+			/**
+			 * Set dir value for a case
+			 */
+			"setDir" : function( dir, x, y ) {
+				this.getSquare( x, y )[ 3 ] = dir; 
 			},
 
 			/**
@@ -106,9 +117,13 @@
 					}
 				} );
 
-				( !element ) && ( fGameOver() );
+				( !element ) && ( Game.over( 'hitTheWall' ) );
 
 				return element;
+			},
+
+			"drawImg": function( sX, sY, sW, sH, cX, cY, cW, cH ) {
+				oCadre.context.drawImage( oSpriteSheet, sX, sY, sW, sH, cX, cY, cW, cH );
 			},
 
 			/**
@@ -118,41 +133,54 @@
 				this.squares.forEach( function( e ) {
 					switch( e[ 2 ] ) {
 						case SNAKE :
-							this.ctx.fillStyle = SNAKE_COLOR;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							this.drawImg( 0, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case FRUIT :
-							this.ctx.fillStyle = FRUIT_COLOR;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							this.drawImg( 154, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							break;
+						case TAIL :
+							if( e[ 3 ] == UP ) {
+								this.drawImg( 44, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else if( e[ 3 ] == DOWN ) {
+								this.drawImg( 176, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else if( e[ 3 ] == LEFT ) {
+								this.drawImg( 197, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else if( e[ 3 ] == RIGHT ) {
+								this.drawImg( 218, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else {
+								this.drawImg( 44, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							}
+							break;
+						case HEAD :
+							if( e[ 3 ] == UP ) {
+								this.drawImg( 22, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else if( e[ 3 ] == DOWN ) {
+								this.drawImg( 245, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else if( e[ 3 ] == LEFT ) {
+								this.drawImg( 294, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							} else if( e[ 3 ] == RIGHT ) {
+								this.drawImg( 272, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							}
 							break;
 						case FREE :
 							this.ctx.fillStyle = FREE_COLOR;
 							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
 							break;
 						case angle_bg :
-							this.ctx.fillStyle = angle_bg;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							this.drawImg( 88, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case angle_hg :
-							this.ctx.fillStyle = angle_hg;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							this.drawImg( 66, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case angle_bd :
-							this.ctx.fillStyle = angle_bd;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							this.drawImg( 132, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case angle_hd :
-							this.ctx.fillStyle = angle_hd;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							this.drawImg( 110, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
-
 					}
 				}, Grid );
-				this.ctx.strokeStyle = "LightSlateGray";
-				this.ctx.rect( 0, 0, this.width, this.height );
-				this.ctx.stroke();
 			}
-
 		}
 
 		/*====================================================================
@@ -160,17 +188,19 @@
 		 ===================================================================*/
 
 		var Snake = {
-			"dir" : null,
+			"dir" : UP,
 			"lastDir": null,
 			"tail": [],
 			"angle": null,
+			"eatFruit": false,
 
 			/**
 			 * Init Snake
 			 */
 			"init": function( x, y ) {
 				this.tail.push( Grid.getSquare( x, y ) );
-				Grid.setValue( SNAKE, x, y );
+				Grid.setValue( HEAD, x, y );
+				Grid.setDir( this.dir, x, y );
 			}, 
 
 			/**
@@ -193,6 +223,21 @@
 					Grid.setValue( angle_hd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
 				} else if ( (this.lastDir == DOWN && this.dir == LEFT) || (this.lastDir == RIGHT && this.dir == UP) ) {
 					Grid.setValue( angle_bd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+				}
+			},
+
+			"setSnakeTail": function() {
+				var i,
+					length = this.tail.length - 2;
+				for( i = 0; i <= length; i++ ) {
+					if ( this.tail[ i ][ 2 ] == HEAD ) {
+						Grid.setValue( SNAKE, this.tail[ i ][ 0 ], this.tail[ i ][ 1 ] );
+						Grid.setDir( this.dir, this.tail[ i ][ 0 ], this.tail[ i ][ 1 ] );
+					}
+				}
+				if ( length >= 1 && !this.eatFruit ) {
+					Grid.setValue( TAIL, this.tail[ 1 ][ 0 ], this.tail[ 1 ][ 1 ] );
+					Grid.setDir( this.tail[ 2 ][ 3 ], this.tail[ 1 ][ 0 ], this.tail[ 1 ][ 1 ] ); // set to the tail the same direction that the square juste after
 				}
 			},
 
@@ -230,25 +275,32 @@
 				( started ) && ( value = Grid.getValue( x, y ) );
 
 				if ( value == FREE ) {
+					this.eatFruit = false;
 					if( length > 2 ) {
 						this.setAngle( lastTailElement );
 					}
-					Grid.setValue( SNAKE, x, y );
+					Grid.setValue( HEAD, x, y );
+					Grid.setDir( this.dir, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
+					this.setSnakeTail();
 					this.lastDir = this.dir;
+					Grid.setFreeSquare();
 					Snake.removeFromTail();
 				} else if ( value == FRUIT ) {
-					Grid.setValue( SNAKE, x, y );
+					this.eatFruit = true;
 					if( length > 2 ) {
 						this.setAngle( lastTailElement );
 					}
-					Game.score++;
+					Grid.setValue( HEAD, x, y );
+					Grid.setDir( this.dir, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
+					this.setSnakeTail();
 					this.lastDir = this.dir;
 					Grid.setFreeSquare();
 					Fruit.init();
+					Game.score++;
 				} else if ( value ){
-					fGameOver();
+					Game.over( 'eatYourSelf' );
 				}
 			}
 		};
@@ -263,7 +315,6 @@
 				Grid.setValue( FRUIT, randomFreeSquare[ 0 ], randomFreeSquare[ 1 ] );
 				Grid.setFreeSquare();
 		 	}
-
 		 }
 
 		/*====================================================================
@@ -288,6 +339,58 @@
 				oCadre.context.fillStyle = this.color;
 				oCadre.context.font = "12px 'Avenir Next'";
 				oCadre.context.fillText('Score : ' + this.score, 30, oCadre.height - 10);
+			},
+
+			"background": {
+				"render": function() {
+					oCadre.context.drawImage(
+						oSpriteSheet,
+						0,
+						0,
+						500,
+						500,
+						0,
+						0,
+						500,
+						500
+					);
+				}
+			},
+
+			"over": function( sWhyYouLoose ) {
+				window.cancelAnimationFrame( iAnimationRequestId );
+
+				oCadre.context.clearRect( 0, 0, oCadre.width, oCadre.height );
+
+				oCadre.context.fillStyle = "Crimson";
+				oCadre.context.fillRect( 0, 0, oCadre.width, oCadre.height );
+
+				switch( sWhyYouLoose ) {
+					case 'eatYourSelf':
+						oCadre.context.drawImage( oSpriteSheet, 200, 520, 98, 98, oCadre.width / 2 - 49, oCadre.height / 2 - 90, 98, 98 );
+						oCadre.context.fillStyle = "#fff";
+						oCadre.context.font = "bold 30px 'Avenir Next'";
+						oCadre.context.textAlign = "center";
+						oCadre.context.fillText("YOU TRY TO EAT YOURSELF", oCadre.width / 2, oCadre.height / 2 + 80);
+						oCadre.context.font = "normal 16px 'Avenir Next'";
+						oCadre.context.fillText("Your score : " + Game.score, oCadre.width / 2, oCadre.height / 2 + 110);
+						break;
+					case 'hitTheWall':
+						oCadre.context.drawImage( oSpriteSheet, 0, 520, 196, 103, oCadre.width / 2 - 98, oCadre.height / 2 - 90, 196, 103 );
+						oCadre.context.fillStyle = "#fff";
+						oCadre.context.font = "bold 30px 'Avenir Next'";
+						oCadre.context.textAlign = "center";
+						oCadre.context.fillText("YOU CAN'T BREAK THE WALL", oCadre.width / 2, oCadre.height / 2 + 80);
+						oCadre.context.font = "normal 16px 'Avenir Next'";
+						oCadre.context.fillText("Your score : " + Game.score, oCadre.width / 2, oCadre.height / 2 + 110);
+						break;
+				}
+
+				oCadre.context.font = "normal 20px 'Avenir Next'";
+				oCadre.context.fillText("Press any key to restart", oCadre.width / 2, oCadre.height / 2 + 160);
+				window.addEventListener( "keypress", function() {
+					return window.location.reload( true );
+				} );
 			}
 
 		};
@@ -300,6 +403,10 @@
 
 			// Init Grid
 			Grid.init( oCadre.context, oCadre.width, oCadre.height );
+
+			oSpriteSheet = new Image();
+			oSpriteSheet.addEventListener( "load", Game.background.render, false );
+			oSpriteSheet.src = oSpriteSheetSrc;
 
 			// Init Snake
 			Snake.init( START_AT_X, START_AT_Y );
@@ -331,21 +438,14 @@
 
 			Grid.setFreeSquare();
 
+			Game.background.render();
+
 			Grid.draw();
 
 			Game.update();
-
-		};
-
-		// Game over
-		var fGameOver = function() {
-			window.cancelAnimationFrame( iAnimationRequestId );
-			window.confirm("Your score : " + Game.score );
-			window.location.reload( true );
 		};
 
 		Game.init();
-		
 
 		// Move the snake
 		window.addEventListener( "keypress", function( e ) {
@@ -360,5 +460,4 @@
 		}, false );
 
 	}
-
 } )();
