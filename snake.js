@@ -190,20 +190,17 @@
 		 * GAME
 		 ===================================================================*/
 
-		/**
-		 * Fonction qui lance le jeu
-		 */
 		var fStart = function() {
-			// On génère une nouvelle grille
+			// Generate new grid
 			var grid = new Grid( oCadre.width, oCadre.height, 10 );
-			// On initialise les carrés comme étant tous vides
+			
+			// Init grid
 			grid.init();
 
-			// On génère un nouveau serpent
+			// Generate Snake
 			Snake.init( grid, iLength );
 			Snake.render();
-			//Snake.update();
-			//fAnimationLoop();
+			fAnimationLoop();
 		};
 
 		var fAnimationLoop = function() {
@@ -221,16 +218,16 @@
 			window.location.reload( true );
 		};
 
-		// On lance le jeu !
+		// Start the game
 		fStart();
 
-		// On dirige le serpent
 		window.addEventListener( "keypress", function( e ) {
-			if ( e.keyCode == 38 ) { Snake.dir = "up" };
-			if ( e.keyCode == 40 ) { Snake.dir = "down" };
-			if ( e.keyCode == 39 ) { Snake.dir = "right" };
-			if ( e.keyCode == 37 ) { Snake.dir = "left" };
+			( e.keyCode == 38 ) &&  ( Snake.dir != "down" ) && ( Snake.dir = "up" );
+			( e.keyCode == 40 ) &&  ( Snake.dir != "up" ) && ( Snake.dir = "down" );
+			( e.keyCode == 39 ) &&  ( Snake.dir != "left" ) && ( Snake.dir = "right" );
+			( e.keyCode == 37 ) &&  ( Snake.dir != "right" ) && ( Snake.dir = "left" );
 		}, false );
+
 	}
 
 	/*====================================================================

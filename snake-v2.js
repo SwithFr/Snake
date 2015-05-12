@@ -16,11 +16,15 @@
 			RIGHT = 39, 
 			DOWN = 40,
 	 
-			SQUARE_WIDTH = 20, // default square width
+			SQUARE_WIDTH = 10, // default square width
 
 			SNAKE_COLOR = "#000", // default colors
 			FREE_COLOR = "#fff", 
 			FRUIT_COLOR = "red",
+			angle_bg = "yellow",
+			angle_hg = "red",
+			angle_hd = "blue",
+			angle_bd = "LightSalmon",
 
 			START_AT_X = 20, // Default start position
 			START_AT_Y = 20;
@@ -116,7 +120,7 @@
 			 * Dessine la grille
 			 */
 			"draw" : function() {
-				this.squares.forEach( function( e, i, array ) {
+				this.squares.forEach( function( e ) {
 					switch( e[ 2 ] ) {
 						case SNAKE :
 							this.ctx.fillStyle = SNAKE_COLOR;
@@ -130,6 +134,23 @@
 							this.ctx.fillStyle = FREE_COLOR;
 							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
 							break;
+						case angle_bg :
+							this.ctx.fillStyle = angle_bg;
+							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							break;
+						case angle_hg :
+							this.ctx.fillStyle = angle_hg;
+							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							break;
+						case angle_bd :
+							this.ctx.fillStyle = angle_bd;
+							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							break;
+						case angle_hd :
+							this.ctx.fillStyle = angle_hd;
+							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
+							break;
+
 					}
 				}, Grid );
 				this.ctx.strokeStyle = "LightSlateGray";
@@ -145,7 +166,9 @@
 
 		var Snake = {
 			"dir" : null,
+			"lastDir": null,
 			"tail": [],
+			"angle": null,
 
 			/**
 			 * On initialise le serpent
@@ -160,9 +183,20 @@
 				this.tail.shift();
 			},
 
+			"setAngle" : function() {
+				( this.lastDir == LEFT && this.dir == UP ) || ( this.lastDir == DOWN && this.dir == RIGHT ) && ( this.angle = angle_bg );
+				( this.lastDir == UP && this.dir == RIGHT ) || ( this.lastDir == LEFT && this.dir == DOWN ) && ( this.angle = angle_hg );
+				( this.lastDir == RIGHT && this.dir == DOWN ) || ( this.lastDir == UP && this.dir == LEFT ) && ( this.angle = angle_hd );
+				( this.lastDir == DOWN && this.dir == LEFT ) || ( this.lastDir == RIGHT && this.dir == UP ) && ( this.angle = angle_bd );
+			},
+
 			"update": function() {
-				var x, y, value = null;
+				var x, y, value = null, length;
 				var lastTailElement = this.tail[ this.tail.length - 1 ];
+				
+				length = this.tail.length;
+
+				this.setAngle();
 
 				switch( this.dir ) {
 					case UP :
@@ -184,17 +218,23 @@
 					default:
 						x = lastTailElement[ 0 ];
 						y = lastTailElement[ 1 ];
-
 				} 
 
 				( started ) && ( value = Grid.getValue( x, y ) );
 
 				if ( value == FREE ) {
+					if( this.angle && length != 1 ) {
+						Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+					}
 					Grid.setValue( SNAKE, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
+					this.lastDir = this.dir;
 					Snake.removeFromTail();
 				} else if ( value == FRUIT ) {
 					Game.score++;
+					if( this.angle && length != 1 ) {
+						Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+					}
 					Grid.setValue( SNAKE, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
 					Grid.newFruit();
@@ -235,6 +275,8 @@
 		};
 
 		var fStart = function() {
+			oCadre.context.clearRect( 0, 0, oCadre.width, oCadre.height );
+
 			// Set start time
 			oTime.start = ( new Date() ).getTime();
 
@@ -258,7 +300,7 @@
 
 			iAnimationRequestId = window.requestAnimationFrame( fAnimationLoop );
 			
-			if( oTime.current - oTime.start > 70 ) {
+			if( oTime.current - oTime.start > 80 ) {
 				oTime.start = ( new Date() ).getTime();
 				Snake.update();
 			}
@@ -274,7 +316,7 @@
 		// Game over
 		var fGameOver = function() {
 			window.cancelAnimationFrame( iAnimationRequestId );
-			window.confirm( "You loose ! \n\nYour score : " + Game.score );
+			window.confirm("Your score : " + Game.score );
 			window.location.reload( true );
 		};
 
@@ -283,7 +325,7 @@
 
 		// On dirige le serpent
 		window.addEventListener( "keypress", function( e ) {
-			( e.keyCode == 13 ) && ( fStart() );
+			( !started ) && ( ( e.keyCode == 13 ) && ( fStart() ) );
 
 			( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) && ( !started ) && ( started = true );
 
