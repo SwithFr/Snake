@@ -16,13 +16,13 @@
 			RIGHT = 39, 
 			DOWN = 40,
 	 
-			SQUARE_WIDTH = 10, // default square width
+			SQUARE_WIDTH = 20, // default square width
 
 			SNAKE_COLOR = "#000", // default colors
 			FREE_COLOR = "#fff", 
 			FRUIT_COLOR = "red",
 			angle_bg = "yellow",
-			angle_hg = "red",
+			angle_hg = "green",
 			angle_hd = "blue",
 			angle_bd = "LightSalmon",
 
@@ -67,10 +67,6 @@
 					}
 
 				} 
-				
-				this.setFreeSquare();
-
-				Grid.newFruit( );
 			},
 
 			/**
@@ -183,12 +179,12 @@
 				this.tail.shift();
 			},
 
-			"setAngle" : function() {
-				( this.lastDir == LEFT && this.dir == UP ) || ( this.lastDir == DOWN && this.dir == RIGHT ) && ( this.angle = angle_bg );
-				( this.lastDir == UP && this.dir == RIGHT ) || ( this.lastDir == LEFT && this.dir == DOWN ) && ( this.angle = angle_hg );
-				( this.lastDir == RIGHT && this.dir == DOWN ) || ( this.lastDir == UP && this.dir == LEFT ) && ( this.angle = angle_hd );
-				( this.lastDir == DOWN && this.dir == LEFT ) || ( this.lastDir == RIGHT && this.dir == UP ) && ( this.angle = angle_bd );
-			},
+			// "setAngle" : function() {
+			// 	( this.lastDir == LEFT && this.dir == UP ) || ( this.lastDir == DOWN && this.dir == RIGHT ) && ( this.angle = angle_bg );
+			// 	( this.lastDir == UP && this.dir == RIGHT ) || ( this.lastDir == LEFT && this.dir == DOWN ) && ( this.angle = angle_hg );
+			// 	( this.lastDir == RIGHT && this.dir == DOWN ) || ( this.lastDir == UP && this.dir == LEFT ) && ( this.angle = angle_hd );
+			// 	( this.lastDir == DOWN && this.dir == LEFT ) || ( this.lastDir == RIGHT && this.dir == UP ) && ( this.angle = angle_bd );
+			// },
 
 			"update": function() {
 				var x, y, value = null, length;
@@ -196,7 +192,7 @@
 				
 				length = this.tail.length;
 
-				this.setAngle();
+				// this.setAngle();
 
 				switch( this.dir ) {
 					case UP :
@@ -223,26 +219,61 @@
 				( started ) && ( value = Grid.getValue( x, y ) );
 
 				if ( value == FREE ) {
-					if( this.angle && length != 1 ) {
-						Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+					// if( this.angle && length != 1 ) {
+					// 	Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+					// }
+					if( length > 2 ) {
+						if( (this.lastDir == LEFT && this.dir == UP) || (this.lastDir == DOWN && this.dir == RIGHT) ) {
+							Grid.setValue( angle_bg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						} else if( (this.lastDir == UP && this.dir == RIGHT) || ( this.lastDir == LEFT && this.dir == DOWN) ) {
+							Grid.setValue( angle_hg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						} else if ( (this.lastDir == RIGHT && this.dir == DOWN) || (this.lastDir == UP && this.dir == LEFT) ) {
+							Grid.setValue( angle_hd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						} else if ( (this.lastDir == DOWN && this.dir == LEFT) || (this.lastDir == RIGHT && this.dir == UP) ) {
+							Grid.setValue( angle_bd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						}
 					}
 					Grid.setValue( SNAKE, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
 					this.lastDir = this.dir;
 					Snake.removeFromTail();
 				} else if ( value == FRUIT ) {
+					Grid.setValue( SNAKE, x, y );
+					if( length > 2 ) {
+						if( (this.lastDir == LEFT && this.dir == UP) || (this.lastDir == DOWN && this.dir == RIGHT) ) {
+							Grid.setValue( angle_bg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						} else if( (this.lastDir == UP && this.dir == RIGHT) || ( this.lastDir == LEFT && this.dir == DOWN) ) {
+							Grid.setValue( angle_hg, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						} else if ( (this.lastDir == RIGHT && this.dir == DOWN) || (this.lastDir == UP && this.dir == LEFT) ) {
+							Grid.setValue( angle_hd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						} else if ( (this.lastDir == DOWN && this.dir == LEFT) || (this.lastDir == RIGHT && this.dir == UP) ) {
+							Grid.setValue( angle_bd, lastTailElement[ 0 ], lastTailElement[ 1 ] );
+						}
+					}
 					Game.score++;
 					if( this.angle && length != 1 ) {
 						Grid.setValue( this.angle, lastTailElement[ 0 ], lastTailElement[ 1 ] );
 					}
-					Grid.setValue( SNAKE, x, y );
 					this.tail.push( Grid.getSquare( x, y ) );
-					Grid.newFruit();
+					Grid.setFreeSquare();
+					Fruit.init();
 				} else if ( value ){
 					fGameOver();
 				}
 			}
 		};
+
+		/*====================================================================
+		 * F R U I T
+		 ===================================================================*/
+
+		 var Fruit = {
+		 	"init": function() {
+		 		var randomFreeSquare = Grid.freeSquares[Math.floor(Math.random()*Grid.freeSquares.length)];
+				Grid.setValue( FRUIT, randomFreeSquare[ 0 ], randomFreeSquare[ 1 ] );
+				Grid.setFreeSquare();
+		 	}
+		 }
 
 		/*====================================================================
 		 * G A M E
@@ -286,6 +317,12 @@
 			// Init Snake
 			Snake.init( START_AT_X, START_AT_Y );
 
+			// Init free square
+			Grid.setFreeSquare();
+
+			// Init fruit
+			Fruit.init()
+
 			// Draw Grid
 			Grid.draw();
 
@@ -300,7 +337,7 @@
 
 			iAnimationRequestId = window.requestAnimationFrame( fAnimationLoop );
 			
-			if( oTime.current - oTime.start > 80 ) {
+			if( oTime.current - oTime.start > 100 ) {
 				oTime.start = ( new Date() ).getTime();
 				Snake.update();
 			}
