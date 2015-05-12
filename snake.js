@@ -139,7 +139,7 @@
 							this.drawImg( 154, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case TAIL :
-							if( e[ 3 ] == UP ) {
+							if( e[ 3 ] == UP || e[ 3 ] == null ) {
 								this.drawImg( 44, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == DOWN ) {
 								this.drawImg( 176, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
@@ -152,7 +152,7 @@
 							}
 							break;
 						case HEAD :
-							if( e[ 3 ] == UP ) {
+							if( e[ 3 ] == UP || e[ 3 ] == null ) {
 								this.drawImg( 22, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == DOWN ) {
 								this.drawImg( 245, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
@@ -188,7 +188,7 @@
 		 ===================================================================*/
 
 		var Snake = {
-			"dir" : UP,
+			"dir" : null,
 			"lastDir": null,
 			"tail": [],
 			"angle": null,
