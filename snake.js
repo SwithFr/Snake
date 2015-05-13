@@ -32,7 +32,9 @@
 			START_AT_Y = 240,
 
 			oSpriteSheet = null, // Image
-			oSpriteSheetSrc = './snake-sprite.png';
+			oSpriteSheetSrc = './snake-sprite.png',
+
+			hasLost = false;
 
 		/*====================================================================
 		 * G L O B A L S
@@ -323,16 +325,18 @@
 
 		var Game = {
 			"score" : 0,
-			"color" : "IndianRed",
+			"color" : "#003333",
 
 			"init"	: function() {
-				oCadre.context.fillStyle = "LightSalmon";
+				oCadre.context.fillStyle = "#66cc99";
 				oCadre.context.fillRect( 0, 0, oCadre.width, oCadre.height );
 
 				oCadre.context.fillStyle = this.color;
-				oCadre.context.font = "bold 16px 'Avenir Next'";
+				oCadre.context.font = "bold 20px 'Avenir Next'";
 				oCadre.context.textAlign = "center";
-				oCadre.context.fillText("PRESS ENTER TO START", oCadre.width / 2, oCadre.height / 2);
+				oCadre.context.fillText("AVANGE THE WORMS AND EAT ALL BIRDS", oCadre.width / 2, oCadre.height / 2 - 20);
+				oCadre.context.font = "bold 30px 'Avenir Next'";
+				oCadre.context.fillText("PRESS ENTER TO START", oCadre.width / 2, oCadre.height / 2 + 20);
 			},
 
 			"update" : function() {
@@ -358,6 +362,8 @@
 			},
 
 			"over": function( sWhyYouLoose ) {
+				hasLost = true;
+
 				window.cancelAnimationFrame( iAnimationRequestId );
 
 				oCadre.context.clearRect( 0, 0, oCadre.width, oCadre.height );
@@ -392,7 +398,6 @@
 					return window.location.reload( true );
 				} );
 			}
-
 		};
 
 		var fStart = function() {
@@ -436,19 +441,21 @@
 				Snake.update();
 			}
 
-			Grid.setFreeSquare();
+			if( !hasLost ) {
+				Grid.setFreeSquare();
 
-			Game.background.render();
+				Game.background.render();
 
-			Grid.draw();
+				Grid.draw();
 
-			Game.update();
+				Game.update();
+			}
 		};
 
 		Game.init();
 
 		// Move the snake
-		window.addEventListener( "keypress", function( e ) {
+		window.addEventListener( "keydown", function( e ) {
 			( !started ) && ( ( e.keyCode == 13 ) && ( fStart() ) );
 
 			( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) && ( !started ) && ( started = true );
