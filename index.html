@@ -2,25 +2,40 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
-	<title>Snake</title>
+	<title>WORMS REVENGE Game by Swith</title>
+	<link href='http://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'>
 	<style>
+		body {
+			background: url(./background2.png);
+		}
 		* {
 			box-sizing: border-box;
 			text-align: center;
-			font-family: 'Avenir Next';
+			font-family: 'Raleway', sans-serif;
 			font-weight: normal;
+		}
+		h1, h2 {
 			text-transform: uppercase;
 			letter-spacing: 10px;
+		}
+		.source {
+			font-style: italic;
+			font-size: 14px;
 		}
 	</style>
 </head>
 <body>
-	<h1>Snake</h1>
+	<h1>WORMS REVENGE</h1>
+	<h2>Funny alternative to Snake</h2>
 
 	<canvas id="canvas" width="500" height="500">
 		<p>Oups, votre navigateur est vieux ! <a href="http://browshappy.com">Changez-en</a></p>
 	</canvas>
-
+	
+	<p>
+		Homemade javascript game with canvas. © <a href="http://swith.fr">Swith</a>
+	</p>
+	<p class="source">Background : <a href="http://shootingstar03.deviantart.com/art/Sky-background-283397540">downloaded here</a></p>
 	<script src="snake.js"></script>
 	<script src="game.js"></script>
 </body>
