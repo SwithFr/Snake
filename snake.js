@@ -5,23 +5,23 @@
 	window.Snake = function( oCadre ) {
 
 		/*====================================================================
-		 * C O N S T A N T E S 
+		 * C O N S T A N T E S
 		 ===================================================================*/
 		var FREE = 0, // Cases values
-			SNAKE = 1, 
+			SNAKE = 1,
 			FRUIT = 2,
 			TAIL = 3,
 			HEAD = 4,
 
 			LEFT = 37, // keyCode and directions
-			UP = 38, 
-			RIGHT = 39, 
+			UP = 38,
+			RIGHT = 39,
 			DOWN = 40,
-	 
+
 			SQUARE_WIDTH = 20, // default square width
 
 			SNAKE_COLOR = "#d09548", // default colors
-			FREE_COLOR = "transparent", 
+			FREE_COLOR = "transparent",
 			FRUIT_COLOR = "red",
 			angle_bg = "yellow",
 			angle_hg = "green",
@@ -32,14 +32,14 @@
 			START_AT_Y = 240,
 
 			oSpriteSheet = null, // Image
-			oSpriteSheetSrc = './snake-sprite.png',
+			oSpriteSheetSrc = './snake-sprite-2.png',
 
 			hasLost = false;
 
 		/*====================================================================
 		 * G L O B A L S
 		 ===================================================================*/
-		var iAnimationRequestId = 0, 
+		var iAnimationRequestId = 0,
 			started = false,
 			oTime = {
 				"start" : null,
@@ -55,7 +55,7 @@
 			"width":null,
 			"height":null,
 			"squares" : [],
-			"freeSquares": [], // 
+			"freeSquares": [], //
 
 			/**
 			 * Init grid with all free square
@@ -67,26 +67,26 @@
 
 				var x, y;
 
-				for( x = 0; x < this.width; x += SQUARE_WIDTH ) { 
+				for( x = 0; x < this.width; x += SQUARE_WIDTH ) {
 
 					for( y = 0; y < this.width; y += SQUARE_WIDTH ) {
 						this.squares.push( [ x, y, FREE, null ] ); // Create grid
 					}
-				} 
+				}
 			},
 
 			/**
 			 * Set a value for a case
 			 */
 			"setValue" : function( value, x, y ) {
-				this.getSquare( x, y )[ 2 ] = value; 
+				this.getSquare( x, y )[ 2 ] = value;
 			},
 
 			/**
 			 * Set dir value for a case
 			 */
 			"setDir" : function( dir, x, y ) {
-				this.getSquare( x, y )[ 3 ] = dir; 
+				this.getSquare( x, y )[ 3 ] = dir;
 			},
 
 			/**
@@ -101,10 +101,10 @@
 			 */
 			"setFreeSquare": function() {
 				this.freeSquares = [];
-				this.squares.forEach( 
+				this.squares.forEach(
 					function( e ) {
 						if( e[ 2 ] == FREE ) { ( this.freeSquares.push( e ) ); }
-					}, 
+					},
 					this
 				);
 			},
@@ -135,50 +135,44 @@
 				this.squares.forEach( function( e ) {
 					switch( e[ 2 ] ) {
 						case SNAKE :
-							this.drawImg( 0, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							this.drawImg( 19, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case FRUIT :
-							this.drawImg( 154, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							this.drawImg( 145, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case TAIL :
 							if( e[ 3 ] == UP || e[ 3 ] == null ) {
-								this.drawImg( 44, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 166, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == DOWN ) {
-								this.drawImg( 176, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 206, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == LEFT ) {
-								this.drawImg( 197, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 186, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == RIGHT ) {
-								this.drawImg( 218, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
-							} else {
-								this.drawImg( 44, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 0, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							}
 							break;
 						case HEAD :
 							if( e[ 3 ] == UP || e[ 3 ] == null ) {
-								this.drawImg( 22, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 227, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == DOWN ) {
-								this.drawImg( 245, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 248, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == LEFT ) {
-								this.drawImg( 294, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 269, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							} else if( e[ 3 ] == RIGHT ) {
-								this.drawImg( 272, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+								this.drawImg( 124, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							}
 							break;
-						case FREE :
-							this.ctx.fillStyle = FREE_COLOR;
-							this.ctx.fillRect( e[ 0 ], e[ 1 ], SQUARE_WIDTH, SQUARE_WIDTH );
-							break;
 						case angle_bg :
-							this.drawImg( 88, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							this.drawImg( 61, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case angle_hg :
-							this.drawImg( 66, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							this.drawImg( 40, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case angle_bd :
-							this.drawImg( 132, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							this.drawImg( 103, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 						case angle_hd :
-							this.drawImg( 110, 500, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
+							this.drawImg( 82, 0, 20, 20, e[ 0 ], e[ 1 ], 20, 20 );
 							break;
 					}
 				}, Grid );
@@ -203,13 +197,13 @@
 				this.tail.push( Grid.getSquare( x, y ) );
 				Grid.setValue( HEAD, x, y );
 				Grid.setDir( this.dir, x, y );
-			}, 
+			},
 
 			/**
 			 * Remove last element from tail
 			 */
 			"removeFromTail": function() {
-				Grid.setValue( FREE, this.tail[ 0 ][ 0 ], this.tail[ 0 ][ 1 ] ); 
+				Grid.setValue( FREE, this.tail[ 0 ][ 0 ], this.tail[ 0 ][ 1 ] );
 				this.tail.shift();
 			},
 
@@ -249,7 +243,7 @@
 			"update": function() {
 				var x, y, value = null, length;
 				var lastTailElement = this.tail[ this.tail.length - 1 ];
-				
+
 				length = this.tail.length;
 
 				switch( this.dir ) {
@@ -272,7 +266,7 @@
 					default:
 						x = lastTailElement[ 0 ];
 						y = lastTailElement[ 1 ];
-				} 
+				}
 
 				( started ) && ( value = Grid.getValue( x, y ) );
 
@@ -325,10 +319,13 @@
 
 		var Game = {
 			"score" : 0,
-			"color" : "#003333",
+			"color" : "#f8eddd",
 
 			"init"	: function() {
-				oCadre.context.fillStyle = "#66cc99";
+				// Init Grid
+				Grid.init( oCadre.context, oCadre.width, oCadre.height );
+
+				oCadre.context.fillStyle = "#382b38";
 				oCadre.context.fillRect( 0, 0, oCadre.width, oCadre.height );
 
 				oCadre.context.fillStyle = this.color;
@@ -347,17 +344,8 @@
 
 			"background": {
 				"render": function() {
-					oCadre.context.drawImage(
-						oSpriteSheet,
-						0,
-						0,
-						500,
-						500,
-						0,
-						0,
-						500,
-						500
-					);
+					oCadre.context.fillStyle = "#382b38";
+					oCadre.context.fillRect( 0, 0, oCadre.width, oCadre.height );
 				}
 			},
 
@@ -368,13 +356,13 @@
 
 				oCadre.context.clearRect( 0, 0, oCadre.width, oCadre.height );
 
-				oCadre.context.fillStyle = "Crimson";
+				oCadre.context.fillStyle = "#ec6858";
 				oCadre.context.fillRect( 0, 0, oCadre.width, oCadre.height );
+				oCadre.context.fillStyle = "#fff";
 
 				switch( sWhyYouLoose ) {
 					case 'eatYourSelf':
-						oCadre.context.drawImage( oSpriteSheet, 200, 520, 98, 98, oCadre.width / 2 - 49, oCadre.height / 2 - 90, 98, 98 );
-						oCadre.context.fillStyle = "#fff";
+						oCadre.context.drawImage( oSpriteSheet, 150, 22, 79, 79, oCadre.width / 2 - 39.5, oCadre.height / 2 - 90, 79, 79 );
 						oCadre.context.font = "bold 30px 'Avenir Next'";
 						oCadre.context.textAlign = "center";
 						oCadre.context.fillText("YOU TRY TO EAT YOURSELF", oCadre.width / 2, oCadre.height / 2 + 80);
@@ -382,8 +370,7 @@
 						oCadre.context.fillText("Your score : " + Game.score, oCadre.width / 2, oCadre.height / 2 + 110);
 						break;
 					case 'hitTheWall':
-						oCadre.context.drawImage( oSpriteSheet, 0, 520, 196, 103, oCadre.width / 2 - 98, oCadre.height / 2 - 90, 196, 103 );
-						oCadre.context.fillStyle = "#fff";
+						oCadre.context.drawImage( oSpriteSheet, 0, 20, 150, 68, oCadre.width / 2 - 75, oCadre.height / 2 - 90, 150, 68 );
 						oCadre.context.font = "bold 30px 'Avenir Next'";
 						oCadre.context.textAlign = "center";
 						oCadre.context.fillText("YOU CAN'T BREAK THE WALL", oCadre.width / 2, oCadre.height / 2 + 80);
@@ -405,9 +392,6 @@
 
 			// Set start time
 			oTime.start = ( new Date() ).getTime();
-
-			// Init Grid
-			Grid.init( oCadre.context, oCadre.width, oCadre.height );
 
 			oSpriteSheet = new Image();
 			oSpriteSheet.addEventListener( "load", Game.background.render, false );
@@ -435,7 +419,7 @@
 			oCadre.context.clearRect( 0, 0, oCadre.width, oCadre.height );
 
 			iAnimationRequestId = window.requestAnimationFrame( fAnimationLoop );
-			
+
 			if( oTime.current - oTime.start > 100 ) {
 				oTime.start = ( new Date() ).getTime();
 				Snake.update();
